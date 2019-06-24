@@ -1,13 +1,13 @@
 """
 @author lferiani
-@date March 07th, 2019
+@date June 06th, 2019
 
 Pipette rack in 1
 Source 48MWP in 2
 Destination 48MWP in 3
 
-Take diluted drug from A1 in Source and distribute it in staggered wells of Destination
-Take water + DMSO from B1 in Source and distribute it in the remaining wells of Destination
+Take one compund "drug" from A4 in Source and distribute it in staggered wells of Destination
+Take another compound "DMSO" from B4 in Source and distribute it in the remaining wells of Destination
 
 
 """
@@ -20,14 +20,15 @@ pipette_type = 'p10-Single'
 pipette_mount = 'left'
 
 tiprack_slot = '1'
-tip_start_from = 'F2'   # first nonempty tip in the tip rack
+tiprack_type = 'opentrons-tiprack-10ul'
+tip_start_from = 'A5'   # first nonempty tip in the tip rack
 
-transfer_volume_per_well = 3 # uL
+transfer_volume_per_well = 5 # uL
 
 source_slot = '2'
 source_type = '48-well-plate-sarsted'
-source_drug_well = 'A1'
-source_dmso_well = 'B1'
+source_drug_well = 'B4'
+source_dmso_well = 'A4'
 
 destination_slot = '3'
 destination_type = '48-well-plate-sarsted'
@@ -62,12 +63,12 @@ if source_type not in labware.list():
 ############################ define labware
 # pipette and tiprack
 if pipette_type == 'p10-Single':
-    tiprack = labware.load('tiprack-10ul', tiprack_slot)
+    tiprack = labware.load(tiprack_type, tiprack_slot)
     pipette = instruments.P10_Single(
         mount=pipette_mount,
         tip_racks=[tiprack])
 pipette.start_at_tip(tiprack.well(tip_start_from))
-pipette.plunger_positions['drop_tip'] = -7
+pipette.plunger_positions['drop_tip'] = -6
 
 # container for the drugs
 src_container = labware.load(source_type, source_slot)
@@ -91,25 +92,21 @@ dst_dmso = [well.bottom(agar_thickness) for well in dst_dmso]
 # safety command
 pipette.drop_tip()
 
+# transfer dmso
+pipette.transfer(transfer_volume_per_well,
+                src_dmso,
+                dst_dmso,
+                new_tip='always',
+                blow_out=True,
+                touch_tip=True)
 
 # transfer drugs
-# do each of the 6 rows independently
-for rc in range(6): # row counter
-    cc = 4*rc; # column counter, imagining thed dst_drug is not a 24 long list but a 6 by 4
-    row_dst_drug = dst_drug[cc:cc+4]
-    pipette.transfer(transfer_volume_per_well,
-                    src_drug,
-                    row_dst_drug,
-                    blow_out=True)
-
-# transfer dmso
-for rc in range(6): # row counter
-    cc = 4*rc; # column counter, imagining thed dst_drug is not a 24 long list but a 6 by 4
-    row_dst_dmso = dst_dmso[cc:cc+4]
-    pipette.transfer(transfer_volume_per_well,
-                    src_dmso,
-                    row_dst_dmso,
-                    blow_out=True)
+pipette.transfer(transfer_volume_per_well,
+                src_drug,
+                dst_drug,
+                new_tip='always',
+                blow_out=True,
+                touch_tip=True)
 
 # print
 for c in robot.commands():
