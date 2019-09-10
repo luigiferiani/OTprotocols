@@ -1,19 +1,27 @@
 """
 @author lferiani
-@date June 26th, 2019
+@date July 30th, 2019
 
-Tip rack for multichannel in 1
-Trough for water in 4
-Tip rack for drugs in 3
-Source 48WP in 6
-Destination 96WPs in 2,5,8
+Tip rack for multichannel in 11
+Trough for water in 10
+Tip rack for drugs in 4, 7, 8, 9
+Source 48WP in 5 - drugs stored in top row
+Destination 96WPs in 1, 2, 3, 6
 
-First dispense 10ul of water on all plates, using multichanel pipette_type
-Then dispense 3ul of DMSO+drugs from 3 wells of the source 48WP onto wells of the destination 96WPs
+Times 4:
+    - Dispense 5ul of water on a plates, using multichanel pipette_type
+    - Then dispense 3ul of compound (or water for nocompound control) from 8
+        wells of the source 48WP onto wells of the destination 96WPs
 
+Drugs are staggered in the destination MWP (at each new column, shift down one
+the position wrt the previous column. e.g. if a drug is in F1 it will then be in
+G2, H3, 'A4' etc)
 
+The last destination MWP has drugs randomly shuffled (using a known random seed
+so we can reproduce the MWP layout to get the ground truth)
 
 """
+
 import numpy as np
 from opentrons import labware, instruments, robot
 
@@ -22,41 +30,47 @@ from opentrons import labware, instruments, robot
 # multichannel pipette parameters and tipracks
 multi_pipette_type = 'p10-Multi'
 multi_pipette_mount = 'left'
-tiprack_slots_multi = ['1']
+tiprack_slots_multi = ['11']
 tiprack_type_multi = 'opentrons-tiprack-10ul'
 tip_start_from_multi = '1'
 
 # single pipette parameters
 single_pipette_type = 'p10-Single'
 single_pipette_mount = 'right'
-tiprack_slots_single = ['3']
+tiprack_slots_single = ['4','7','8','9']
 tiprack_type_single = 'opentrons-tiprack-10ul'
 tip_start_from_single = 'A1'
 
 # water trough
-H2O_source_slot = '4'
+H2O_source_slot = '10'
 H2O_source_type = 'trough-12row'
 H2O_source_well = 'A1'
 H2O_volume = 5
 
 # drugs source
-drugs_source_slot = '6'
+drugs_source_slot = '5'
 drugs_source_type = '48-well-plate-sarsted'
-drugs_names_source_wells = {'DMSO':'A1', 'Chlorpromazine':'B1', 'Amisulpride':'C1'}
+drugs_names_source_wells = {'DMSO':'A1',
+                            'NoCompound':'A2',
+                            'Haloperidol':'A3',
+                            'Rispiridone':'A4',
+                            'Chlorpromazine_HCl':'A5',
+                            'Clozapine':'A6',
+                            'Lamotrigine':'A7',
+                            'Riluzole':'A8'}
 drugs_volume = 3
 
 # destination plates
-agar_thickness = +3 # mm from the bottom of the well
-destination_slots = ['2','5','8']
+agar_thickness = +2.5 # mm from the bottom of the well
+destination_slots = ['1','2','3','6']
 destination_type = '96-well-plate-sqfb-whatman'
 plate_shape = (8,12)
-ntreatments = len(drugs_names_source_wells) + 1 # 2 drugs, dmso, no treatment
+ntreatments = len(drugs_names_source_wells) # 6 drugs, dmso, no compound (water)
 
 def stagger_wells(plate_size, offset, ntreatments):
     nrows,ncols = plate_size
     foo = np.arange(ncols)
-    wells = np.array([nrows * foo + (foo + offset) % 8,
-                      nrows * foo + (foo + ntreatments + offset) % 8])
+    wells = np.array([nrows * foo + (foo + offset) % 8])
     wells = np.sort(wells.flatten())
     return wells
 
@@ -64,34 +78,9 @@ drugs_names_destination_wells = {}
 for i, drug in enumerate(drugs_names_source_wells):
     drugs_names_destination_wells[drug] = stagger_wells(plate_shape, i, ntreatments)
 
-# sort by well and print drug
-def print_sorted_wellsdrugs(drugswell_dict, nwells):
-    """
-    Takes a dict with drug : list of wells,
-    Prints out well -> drug
-    sorted by well"""
-
-    def number_to_name(input, nwells):
-        alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-        if nwells == 96:
-            nrows = 8
-            ncols = 12
-        row = input//ncols
-        col = input%ncols + 1
-        return alphabet[row]+str(col)
-
-    drugs_list = []
-    wells_list = []
-    wellnames_list = []
-    for drug in drugswell_dict:
-        for well in drugswell_dict[drug]:
-            drugs_list.append(drug)
-            wells_list.append(well)
-            wellnames_list.append(number_to_name(well, nwells))
-
-    sorted_wellsdrugs = [(wellname,well,drug) for wellname, well, drug in sorted(zip(wells_list,wellnames_list,drugs_list))]
-    for wn,w,d in sorted_wellsdrugs:
-        print('{} - {} -> {}'.format(wn,w,d))
+for drug, wells in drugs_names_destination_wells.items():
+    print(drug)
+    print(wells)
 
 # for the plate we fill at random:
 def my_random_sample(popset, k):
@@ -102,22 +91,19 @@ def my_random_sample(popset, k):
     for ii in range(k):
         jj = np.random.randint(len(pop)) # random index in remaining pop
         sample.append(pop.pop(jj))       # pop jj entry in pop and append to sample
-    return sample
+    return sorted(sample)
 
 pool = set(np.arange(np.product(plate_shape)))
 drugs_names_random_destination_wells = {}
-np.random.seed(20190712) # for reproducibility. Let's use 20190712 for the actual experiment, something else for debugging
+np.random.seed(20190730) # for reproducibility. Let's use the experimental date for the actual experiment, something else for debugging
 for i, drug in enumerate(drugs_names_source_wells):
     sample = my_random_sample(pool, np.product(plate_shape)/ntreatments)
     pool -= set(sample)
     drugs_names_random_destination_wells[drug] = sample
 
+for k,v in drugs_names_random_destination_wells.items():
+    print(k, v)
 
-# print wells - drugs correspondence
-print('Plate 1 and 2:')
-print_sorted_wellsdrugs(drugs_names_destination_wells, 96)
-print('Plate 3')
-print_sorted_wellsdrugs(drugs_names_random_destination_wells, 96)
 
 ############################# define custom multiwell plates
 
@@ -161,6 +147,7 @@ if single_pipette_type == 'p10-Single':
 pipette_single.start_at_tip(tipracks_single[0].well(tip_start_from_single))
 pipette_single.plunger_positions['drop_tip'] = -6
 
+
 # multi channel
 if multi_pipette_type == 'p10-Multi':
     tipracks_multi = [labware.load(tiprack_type_multi, tiprack_slot) \
@@ -176,6 +163,7 @@ pipette_multi.plunger_positions['drop_tip'] = -6
 water_src_container = labware.load(H2O_source_type, H2O_source_slot)
 water_src_well = water_src_container.wells(H2O_source_well)
 
+
 # container for drugs
 drugs_src_container = labware.load(drugs_source_type, drugs_source_slot)
 # make a dict drugs -> wells
@@ -186,7 +174,6 @@ for drug, well in drugs_names_source_wells.items():
 # destination containers
 dst_plates = [labware.load(destination_type, slot) for slot in destination_slots]
 dst_plate_random = dst_plates.pop(-1) # select the last plate to be the one filled "at random"
-
 
 
 ################### actions
@@ -208,8 +195,9 @@ def count_used_tips():
 
 count_used_tips() # should be 0
 
-# first put water
-for dst_plate in (dst_plates + [dst_plate_random]):
+# first put water, then drugs in plates where position of drugs is "known"
+for dst_plate in dst_plates:
+
     # pretend you're filling the top row, but this is 8channel so whole plate will be filled
     dst_wells = [dst_well.bottom(agar_thickness) for dst_well in dst_plate.rows('A')]
     # try this as well, should be same exact thing
@@ -217,11 +205,7 @@ for dst_plate in (dst_plates + [dst_plate_random]):
                            water_src_well,
                            dst_wells,
                            blow_out=True)
-    count_used_tips() # 8, 16, 24
 
-
-# now put drugs in plates where position of drugs is "known"
-for dst_plate in dst_plates:
     # one drug at a time:
     for drug in drugs_src_wells:
         # create list of destination wells in the selected plate for the selected drug
@@ -237,10 +221,20 @@ for dst_plate in dst_plates:
                                 new_tip='always',
                                 blow_out=True)
 
-    count_used_tips() # each time we fill up 3/4 of a 96wp = 72 => expecting 96, 168
-    robot.pause(60)
-    pipette_single.reset_tip_tracking()
+    count_used_tips()
+    # each time we add water and fill up a 96wp => expecting 104 tips every plate
+    # so 104, 208, 312
 
+
+# now put water and drugs in random plate
+# pretend you're filling the top row, but this is 8channel so whole plate will be filled
+dst_wells = [dst_well.bottom(agar_thickness) for dst_well in dst_plate_random.rows('A')]
+# try this as well, should be same exact thing
+pipette_multi.transfer(H2O_volume,
+                       water_src_well,
+                       dst_wells,
+                       blow_out=True)
+count_used_tips() # 312 + 8 = 320
 
 # now put drug on the "random" plate dst_plate_random
 for drug in drugs_src_wells:
@@ -254,10 +248,4 @@ for drug in drugs_src_wells:
                             new_tip='always',
                             blow_out=True)
 
-count_used_tips() # 168+72 = 240
-
-
-
-# print
-# for c in robot.commands():
-#     print(c)
+count_used_tips() # 320+96 = 416
