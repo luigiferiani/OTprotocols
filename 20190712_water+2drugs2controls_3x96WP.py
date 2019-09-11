@@ -76,8 +76,8 @@ def print_sorted_wellsdrugs(drugswell_dict, nwells):
         if nwells == 96:
             nrows = 8
             ncols = 12
-        row = input//ncols
-        col = input%ncols + 1
+        row = input%nrows
+        col = input//nrows + 1
         return alphabet[row]+str(col)
 
     drugs_list = []
@@ -89,9 +89,9 @@ def print_sorted_wellsdrugs(drugswell_dict, nwells):
             wells_list.append(well)
             wellnames_list.append(number_to_name(well, nwells))
 
-    sorted_wellsdrugs = [(wellname,well,drug) for wellname, well, drug in sorted(zip(wells_list,wellnames_list,drugs_list))]
+    sorted_wellsdrugs = [(wellname,well,drug) for well, wellname, drug in sorted(zip(wells_list,wellnames_list,drugs_list))]
     for wn,w,d in sorted_wellsdrugs:
-        print('{} - {} -> {}'.format(wn,w,d))
+        print('{},{}'.format(wn,d))
 
 # for the plate we fill at random:
 def my_random_sample(popset, k):
@@ -116,7 +116,7 @@ for i, drug in enumerate(drugs_names_source_wells):
 # print wells - drugs correspondence
 print('Plate 1 and 2:')
 print_sorted_wellsdrugs(drugs_names_destination_wells, 96)
-print('Plate 3')
+print('Plate 3:')
 print_sorted_wellsdrugs(drugs_names_random_destination_wells, 96)
 
 ############################# define custom multiwell plates
@@ -255,7 +255,6 @@ for drug in drugs_src_wells:
                             blow_out=True)
 
 count_used_tips() # 168+72 = 240
-
 
 
 # print

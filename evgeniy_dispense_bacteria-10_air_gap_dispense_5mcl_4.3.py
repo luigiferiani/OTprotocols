@@ -37,7 +37,7 @@ source_type = '96-flat'
 
 aspirating_volume = 10
 dispensing_volume = 15
-air_gap = dispensing_volume - aspirating_volume 
+air_gap = dispensing_volume - aspirating_volume
 # M9 trough
 #M9_source_slot = '7'
 #M9_source_type = 'trough-12row'
@@ -123,7 +123,6 @@ def count_used_tips():
 
 count_used_tips() # should be 0
 
-# first put water, then drugs in plates where position of drugs is "known"
 for dst_plate in dst_plates:
 
     # pretend you're filling the top row, but this is 8channel so whole plate will be filled
@@ -146,7 +145,7 @@ for dst_plate in dst_plates:
 
         pipette_multi.dispense(dispensing_volume,
                                dst_well, rate=4.0)
-        pipette_multi.blow_out()  
+        pipette_multi.blow_out()
         pipette_multi.drop_tip()
         # try this as well, should be same exact thing
 #        pipette_multi.transfer(dispensing_volume,
