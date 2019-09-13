@@ -45,7 +45,7 @@ multi_pipette_mount = 'left'      # Mount orientation
 
 # Tip rack params
 tiprack_type_multi = 'tiprack-200ul' # Type of tip rack used
-# LF: I think we have a few boxes/refills of this: opentrons_96_tiprack_300ul
+# LF: I think we have a few boxes/refills of this: 'opentrons_96_tiprack_300ul'
 tiprack_slots_multi = ['7','8']      # Positions of tip racks in OpenTrons robot
 # tip_start_from_multi = '7'           # Position of first tip rack to be used
 tip_start_from_multi = '1'           # Position of first tip column to be used
@@ -124,12 +124,11 @@ for src_column, dst_plate in zip(source_active_columns, dst_plates):
 
     # Iterate over top row only and 8-channel multi-pipette will fill entire plate
     src_well = src_plate.columns(src_column)[0]
-    # LF: this syntax gives you A1, A2 right?
 
     for dst_well in dst_plate.rows('A'): #dst_wells = [well.bottom(2.5) for well in dst_plate.rows('A')]
         # Adjust tip height to account for agar in destination plate
-        dst_well = dst_well.bottom(agar_thickness)
-        # print("SOURCE WELL:", src_well, "\nDST_WELL:", dst_well)
+        dst_well = dst_well.bottom(agar_thickness) # with offset
+        print("SOURCE WELL:", src_well, "\nDST_WELL:", dst_well)
 
         # Pick up tips (8-channel)
         pipette_multi.pick_up_tip()
