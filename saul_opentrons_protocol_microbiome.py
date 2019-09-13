@@ -137,7 +137,8 @@ for src_column, dst_plate in zip(source_active_columns, dst_plates):
         # Aspirate (suck up) bacteria in source plate  aturate the tips to remove air bubbles
         pipette_multi.aspirate(air_gap, src_well.bottom(30), rate=4.0)
         pipette_multi.aspirate(aspirating_volume, src_well, rate=4.0)
-        pipette_multi.dispense(dispensing_volume, src_well, rate=4.0)
+        # pipette_multi.dispense(dispensing_volume, src_well, rate=4.0)
+        pipette_multi.dispense(dispensing_volume, dst_well, rate=4.0) # LF: fixed this little bug
         pipette_multi.blow_out()
         pipette_multi.drop_tip()
 
