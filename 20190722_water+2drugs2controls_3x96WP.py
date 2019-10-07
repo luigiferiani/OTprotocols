@@ -65,9 +65,35 @@ drugs_names_destination_wells = {}
 for i, drug in enumerate(drugs_names_source_wells):
     drugs_names_destination_wells[drug] = stagger_wells(plate_shape, i, ntreatments)
 
-for drug, wells in drugs_names_destination_wells.items():
-    print(drug)
-    print(wells)
+
+# sort by well and print drug
+def print_sorted_wellsdrugs(drugswell_dict, nwells):
+    """
+    Takes a dict with drug : list of wells,
+    Prints out well -> drug
+    sorted by well"""
+
+    def number_to_name(input, nwells):
+        alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+        if nwells == 96:
+            nrows = 8
+            ncols = 12
+        row = input%nrows
+        col = input//nrows + 1
+        return alphabet[row]+str(col)
+
+    drugs_list = []
+    wells_list = []
+    wellnames_list = []
+    for drug in drugswell_dict:
+        for well in drugswell_dict[drug]:
+            drugs_list.append(drug)
+            wells_list.append(well)
+            wellnames_list.append(number_to_name(well, nwells))
+
+    sorted_wellsdrugs = [(wellname,well,drug) for well, wellname, drug in sorted(zip(wells_list,wellnames_list,drugs_list))]
+    for wn,w,d in sorted_wellsdrugs:
+        print('{},{}'.format(wn,d))
 
 # for the plate we fill at random:
 def my_random_sample(popset, k):
@@ -88,8 +114,11 @@ for i, drug in enumerate(drugs_names_source_wells):
     pool -= set(sample)
     drugs_names_random_destination_wells[drug] = sample
 
-for k,v in drugs_names_random_destination_wells.items():
-    print(k, v)
+print('Plate 1 and 2:')
+print_sorted_wellsdrugs(drugs_names_destination_wells, 96)
+print('Plate 3:')
+print_sorted_wellsdrugs(drugs_names_random_destination_wells, 96)
+
 
 ############################# define custom multiwell plates
 
