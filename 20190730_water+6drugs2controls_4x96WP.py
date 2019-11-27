@@ -23,6 +23,7 @@ so we can reproduce the MWP layout to get the ground truth)
 """
 
 import numpy as np
+import datetime
 from opentrons import labware, instruments, robot
 
 ####################### user intuitive parameters
@@ -167,8 +168,10 @@ if '96-well-plate-sqfb-whatman' not in labware.list():
 
 # single channel
 if single_pipette_type == 'p10-Single':
-    tipracks_single = [labware.load(tiprack_type_single, tiprack_slot) \
-                       for tiprack_slot in tiprack_slots_single]
+    tipracks_single = [
+        labware.load(tiprack_type_single, tiprack_slot)
+        for tiprack_slot in tiprack_slots_single
+    ]
     pipette_single = instruments.P10_Single(
         mount=single_pipette_mount,
         tip_racks=tipracks_single)
@@ -178,7 +181,7 @@ pipette_single.plunger_positions['drop_tip'] = -6
 
 # multi channel
 if multi_pipette_type == 'p10-Multi':
-    tipracks_multi = [labware.load(tiprack_type_multi, tiprack_slot) \
+    tipracks_multi = [labware.load(tiprack_type_multi, tiprack_slot)
                       for tiprack_slot in tiprack_slots_multi]
     pipette_multi = instruments.P10_Multi(
         mount=multi_pipette_mount,
@@ -277,3 +280,8 @@ for drug in drugs_src_wells:
                             blow_out=True)
 
 count_used_tips() # 320+96 = 416
+
+out_fname = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")+'_runlog.txt'
+with open(out_fname,'w') as fid:
+    for command in robot.commands():
+        print(command,file=fid)
