@@ -381,7 +381,8 @@ lib_wells_list = [well
 # counters
 start_druglib_well = 24 # because robot crashed after two rows of drugs from library
 column_counter = 120  # needed to keep track of which column as drugs span multiple plates
-# robot died and restarting from the third round. Two rounds are 10 columns * 6 plates * 2 rounds
+# robot died and restarting from the third round.
+# Two rounds are 10 columns * 6 plates * 2 rounds
 
 if is_new_set_stock_plates(column_counter):
     new_round_actions(pipette_multi)
