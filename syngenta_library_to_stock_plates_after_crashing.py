@@ -345,7 +345,7 @@ def safely_pick_up_tip(pipette):
         # prompt user action
         print_change_tiprack(pipette)
         # tell robot that we changed the tipracks
-        pipette_multi.reset_tip_tracking()
+        pipette.reset_tip_tracking()
     # proceed to pick up the tips as intended
     return pipette.pick_up_tip()
 
