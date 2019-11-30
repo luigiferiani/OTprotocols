@@ -50,7 +50,7 @@ drugs_volume = 3
 
 
 # destination plates
-agar_thickness = +2.5 # mm from the bottom of the well
+agar_thickness = +3.7 # mm from the bottom of the well
 destination_slots = ['1','4','7','10']
 destination_type = '96-well-plate-sqfb-whatman'
 
