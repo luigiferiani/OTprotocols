@@ -213,7 +213,7 @@ for plates_tuple, wells_tuple in wells_mapping.items():
 
 
     count_used_tips()
-    robot.pause(60)
+    robot.pause()
     pipette_multi.reset_tip_tracking()
     # each time we add water and fill up a 96wp => expecting 104 tips every plate
     # so 104, 208, 312, 416
