@@ -43,7 +43,7 @@ H2O_source_well = 'A1'
 H2O_volume = 5
 
 # drugs source
-drugs_source_slots = ['2','5','8','11']
+drugs_source_slots = ['1','4','7','10']
 drugs_source_type = '96-well-plate-pcr-thermofisher'
 frombottom_off = +0.3 # mm from bottom of src wells
 drugs_volume = 3
@@ -51,7 +51,7 @@ drugs_volume = 3
 
 # destination plates
 agar_thickness = +3.7 # mm from the bottom of the well
-destination_slots = ['1','4','7','10']
+destination_slots = ['2','5','8','11']
 destination_type = '96-well-plate-sqfb-whatman'
 
 n_columns = 12
