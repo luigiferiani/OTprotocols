@@ -9,7 +9,7 @@ Tip rack for drugs (to change) in 3
 Trough for water in 9
 
 Source 96WPs in 1, 4, 7, 10
-Destination 96WPs in 2, 5, 8, 111, 4, 7, 10
+Destination 96WPs in 2, 5, 8, 11
 
 Times 4:
     - Dispense 5ul of water on a plate, using multichanel pipette
