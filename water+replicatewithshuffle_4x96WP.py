@@ -6,10 +6,10 @@ Only use multichannel
 
 Tip rack for water in 6
 Tip rack for drugs (to change) in 3
-Trough for water in 9
+Trough for water in 9, well A12 (minimise contamination)
 
-Source 96WPs in 2, 5, 8, 11
-Destination 96WPs in 1, 4, 7, 10
+Source 96WPs in 1, 4, 7, 10
+Destination 96WPs in 2, 5, 8, 11
 
 Times 4:
     - Dispense 5ul of water on a plate, using multichanel pipette
@@ -39,19 +39,19 @@ tiprackH2O_type = 'opentrons-tiprack-10ul'
 # water trough
 H2O_source_slot = '9'
 H2O_source_type = 'trough-12row'
-H2O_source_well = 'A1'
-H2O_volume = 5
+H2O_source_well = 'A12'
+H2O_volume = 7
 
 # drugs source
-drugs_source_slots = ['2','5','8','11']
+drugs_source_slots = ['10', '7', '4', '1']
 drugs_source_type = '96-well-plate-pcr-thermofisher'
 frombottom_off = +0.3 # mm from bottom of src wells
-drugs_volume = 3
+drugs_volume = 3.0
 
 
 # destination plates
-agar_thickness = +3.7 # mm from the bottom of the well
-destination_slots = ['1','4','7','10']
+agar_thickness = +3.3 # mm from the bottom of the well
+destination_slots = ['11', '8', '5', '2']
 destination_type = '96-well-plate-sqfb-whatman'
 
 n_columns = 12
@@ -60,7 +60,7 @@ n_columns = 12
 # it is a dict, with:
 # {(source slot, dest slot):(cols in source, cols in dest)}
 drugs_mapping = {}
-seed = 20190911 # for reproducibility. Let's use the experimental date for the actual experiment, something else for debugging
+seed = 20191205 # for reproducibility. Let's use the experimental date for the actual experiment, something else for debugging
 np.random.seed(seed)
 src_cols = np.arange(n_columns) # array of column numbers
 for ss, ds in zip(drugs_source_slots, destination_slots):
@@ -133,6 +133,8 @@ if multi_pipette_type == 'p10-Multi': # this is mostly a check as we don't own o
         tip_racks=tiprackdrugs)
 pipette_multi.start_at_tip(tiprackdrugs[0].well(tiprackdrugs_startfrom))
 pipette_multi.plunger_positions['drop_tip'] = -6
+# faster dispense
+pipette_multi.set_speed(dispense=pipette_multi.speeds['dispense']*4)
 # I only associated the "drugs" tiprack to the pipette as this is the one I want to handle authomatically
 # I'll manually handle pipetting water
 
@@ -203,17 +205,26 @@ for plates_tuple, wells_tuple in wells_mapping.items():
 
     # drug transfer
     pipette_multi.transfer(drugs_volume,
-                            src_wells,
-                            dst_wells,
-                            new_tip='always',
-                            blow_out=True)
+                           src_wells,
+                           dst_wells,
+                           new_tip='always',
+                           blow_out=True)
 
     for s,d in zip(src_wells, dst_wells):
         print('{} {} -> {} {}'.format(src_plate.parent, s[0], dst_plate.parent, d[0]))
-
 
     count_used_tips()
     robot.pause()
     pipette_multi.reset_tip_tracking()
     # each time we add water and fill up a 96wp => expecting 104 tips every plate
     # so 104, 208, 312, 416
+
+
+#write out robot commands
+if not robot.is_simulating():
+    import datetime
+    out_fname = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")+'_runlog.txt'
+    out_fname = '/data/user_storage/opentrons_data/protocols_logs/' + out_fname
+    with open(out_fname,'w') as fid:
+        for command in robot.commands():
+            print(command,file=fid)
