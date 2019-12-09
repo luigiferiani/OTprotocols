@@ -12,7 +12,7 @@ Source 96WPs in 1, 4, 7, 10
 Destination 96WPs in 2, 5, 8, 11
 
 Times 4:
-    - Dispense 5ul of water on a plate, using multichanel pipette
+    - Dispense 7ul of water on a plate, using multichanel pipette
     - Then dispense 3 ul of compound from the source 96 WP to its destination 96 WP.
         (while shuffling columns)
 
