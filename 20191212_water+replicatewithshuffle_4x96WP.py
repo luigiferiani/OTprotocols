@@ -45,7 +45,7 @@ H2O_volume = 7
 # drugs source
 drugs_source_slots = ['10', '7', '4', '1']
 drugs_source_type = '96-well-plate-pcr-thermofisher'
-frombottom_off = +0.6 # mm from bottom of src wells
+frombottom_off = +0.8 # mm from bottom of src wells
 drugs_volume = 3.0
 
 
