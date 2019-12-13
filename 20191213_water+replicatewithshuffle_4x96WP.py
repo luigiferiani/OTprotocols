@@ -60,7 +60,7 @@ n_columns = 12
 # it is a dict, with:
 # {(source slot, dest slot):(cols in source, cols in dest)}
 drugs_mapping = {}
-seed = 20191212 # for reproducibility. Let's use the experimental date for the actual experiment, something else for debugging
+seed = 20191213 # for reproducibility. Let's use the experimental date for the actual experiment, something else for debugging
 np.random.seed(seed)
 src_cols = np.arange(n_columns) # array of column numbers
 for ss, ds in zip(drugs_source_slots, destination_slots):
