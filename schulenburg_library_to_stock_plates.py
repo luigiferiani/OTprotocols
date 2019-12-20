@@ -25,7 +25,7 @@ from opentrons import labware, instruments, robot
 single_pipette_type = 'p300-Single'
 single_pipette_mount = 'right'
 tiprack_single_slots = ['3']
-tiprack_single_type = 'opentrons_96_filtertiprack_200ul'
+tiprack_single_type = 'opentrons_96_tiprack_300ul'
 tiprack_single_startfrom = 'A1'
 
 # library plates
