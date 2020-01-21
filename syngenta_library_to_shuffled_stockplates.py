@@ -117,7 +117,7 @@ if '96-well-plate-pcr-thermofisher' not in labware.list():
 if multi_pipette_type == 'p50-Multi': # this is mostly a check as we don't own other multichannel pipettes (and to not have swapped single/multi)
     tiprackdrugs = [labware.load(tiprackdrugs_type, slot) \
                       for slot in tiprackdrugs_slots]
-    pipette_multi = instruments.P10_Multi(
+    pipette_multi = instruments.P50_Multi(
         mount=multi_pipette_mount,
         tip_racks=tiprackdrugs)
 pipette_multi.start_at_tip(tiprackdrugs[0].well(tiprackdrugs_startfrom))
@@ -177,8 +177,7 @@ for plates_tuple, wells_tuple in wells_mapping.items():
                            src_wells,
                            dst_wells,
                            new_tip='always',
-                           blow_out=True,
-                           touch_tip=True)
+                           blow_out=True)
 
     for s,d in zip(src_wells, dst_wells):
         print('{} {} -> {} {}'.format(src_plate.parent, s[0], dst_plate.parent, d[0]))
