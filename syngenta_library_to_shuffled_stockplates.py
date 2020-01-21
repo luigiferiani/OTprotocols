@@ -36,7 +36,7 @@ tiprackdrugs_startfrom = '1'
 drugs_source_slots = ['10', '7', '4', '1']
 drugs_source_type = '96-well-plate-pcr-thermofisher'
 frombottom_off = +0.5 # mm from bottom of src wells
-drugs_volume = 25.0
+drugs_volume = 18.0
 
 
 # destination plates
