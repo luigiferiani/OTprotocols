@@ -36,7 +36,7 @@ tiprackdrugs_startfrom = '1'
 drugs_source_slots = ['10', '7', '4', '1']
 drugs_source_type = '96-well-plate-pcr-thermofisher'
 frombottom_off = +0.5 # mm from bottom of src wells
-drugs_volume = 18.0
+drugs_volume = 15.0
 
 
 # destination plates
@@ -49,7 +49,7 @@ n_columns = 12
 # it is a dict, with:
 # {(source slot, dest slot):(cols in source, cols in dest)}
 drugs_mapping = {}
-seed = 202001140 # for reproducibility. Let's use the experimental date for the actual experiment and the run number, something else for debugging
+seed = 202001240 # for reproducibility. Let's use the experimental date for the actual experiment and the run number, something else for debugging
 np.random.seed(seed)
 src_cols = np.arange(n_columns) # array of column numbers
 for ss, ds in zip(drugs_source_slots, destination_slots):
@@ -177,6 +177,7 @@ for plates_tuple, wells_tuple in wells_mapping.items():
                            src_wells,
                            dst_wells,
                            new_tip='always',
+                           mix_before=(3, 15),
                            blow_out=True)
 
     for s,d in zip(src_wells, dst_wells):
