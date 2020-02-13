@@ -293,7 +293,7 @@ def safely_pick_up_tip(pipette):
         # prompt user action
         print_change_tiprack(pipette)
         # tell robot that we changed the tipracks
-        pipette_multi.reset_tip_tracking()
+        pipette.reset_tip_tracking()
     # proceed to pick up the tips as intended
     return pipette.pick_up_tip()
 
@@ -318,7 +318,7 @@ def safely_transfer(pipette, volume, source, destination, **kwargs):
 # safety command
 pipette_single.drop_tip()
 is_always_change = True
-
+tc = 0
 for src_well, dst in robot_mapping.items():
     if is_always_change:
         # deal with wells not being iterable while wellseries are
@@ -328,12 +328,17 @@ for src_well, dst in robot_mapping.items():
             dst_wells = dst
 
         for dst_well in dst_wells:
-            safely_transfer(pipette_single,
-                            bacterial_volume,
-                            src_well,
-                            dst_well,
-                            blow_out=True,
-                            )
+            if (tc % 96 == 0) and (tc != 0):
+                print('used {} tips so far'.format(tc))
+                pipette_single.reset_tip_tracking()
+                robot.pause()
+
+            pipette_single.transfer(bacterial_volume,
+                                    src_well,
+                                    dst_well,
+                                    blow_out=True,
+                                    )
+            tc+=1
     else:
         safely_transfer(pipette_single,
                         bacterial_volume,
