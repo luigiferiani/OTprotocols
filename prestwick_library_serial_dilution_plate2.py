@@ -257,7 +257,7 @@ def serially_dilute_well(high_well):
         [middle_well, low_well],
         blow_out=True,
         mix_before=(2, 10), # mix 2x with 10 uL before
-        mix_after=(3, 10), # mix 2x with 10 uL after
+        mix_after=(2, 10), # mix 2x with 10 uL after
         touch=True,
         new_tip='always'
     )
