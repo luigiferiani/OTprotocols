@@ -251,7 +251,7 @@ def put_solvent_in_row(high_wells):
         solvent_volume,
         dmso_src_well,
         wells_for_solvent,
-        blow_out=True,
+        blow_out=False,
         new_tip='once'
         )
     return
