@@ -7,7 +7,7 @@ Only use multichannel
 Tip racks for drugs in 4, 7, 10
 
 Source 96WP in 5
-Destination 96WPs in 9, 8, 11
+Destination 96WPs in 11, 8, 9
 
 Times 3 (number of shufflings)
     - Dispense 10 ul of compound from the source (library) 96 WP to its
@@ -152,6 +152,7 @@ for plates_tuple, wells_tuple in wells_mapping.items():
         dst_wells,
         new_tip='always',
         mix_before=(3, 10),
+        touch_tip=True,
         blow_out=True)
 
     for s,d in zip(src_wells, dst_wells):
