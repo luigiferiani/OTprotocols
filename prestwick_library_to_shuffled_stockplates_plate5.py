@@ -67,6 +67,30 @@ for key, value in drugs_mapping.items():
     for _src_col, _dst_col in zip(_src_cols, _dst_cols):
         print('slot {0} col {1} --> slot {2} col {3}'.format(_src_slot, _src_col, _dst_slot, _dst_col))
 
+# print out for humans to do it
+plate_name_dict = {
+    '5': 'Prestwick_L{:02d}'.format(plate_number),
+    '11': 'Prestwick_L{:02d}_SH01'.format(plate_number),
+    '8': 'Prestwick_L{:02d}_SH02'.format(plate_number),
+    '9': 'Prestwick_L{:02d}_SH03'.format(plate_number),
+    }
+instructions_list = []
+for key, value in drugs_mapping.items():
+    _src_slot, _dst_slot = key
+    _src_cols, _dst_cols = value
+    for _src_col, _dst_col in zip(_src_cols, _dst_cols):
+        src_col_number = _src_col+1
+        dst_col_number = _dst_col+1
+        src_plate_name = plate_name_dict[_src_slot]
+        dst_plate_name = plate_name_dict[_dst_slot]
+        instruction = f'{src_plate_name} col {src_col_number:02d} --> {dst_plate_name} col {dst_col_number:02d}'
+        instructions_list.append(instruction)
+# now sort alphabetically (so you do 1 drug => 3 shufflings)
+sorted_instructions = sorted(instructions_list)
+for instruction in sorted_instructions:
+    print(instruction)
+
+
 ############################# define custom multiwell plates
 
 if '96-well-plate-pcr-thermofisher' not in labware.list():
