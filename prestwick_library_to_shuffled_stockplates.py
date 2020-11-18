@@ -38,7 +38,7 @@ tiprackdrugs_startfrom = '1'
 drugs_source_slot = '5'
 drugs_source_type = '96-well-plate-pcr-thermofisher'
 drugs_volume = 10.0
-frombottom_off = +0.8
+frombottom_off = +1
 
 # destination plates
 destination_slots = ['11', '8', '9']
@@ -152,7 +152,6 @@ for plates_tuple, wells_tuple in wells_mapping.items():
         dst_wells,
         new_tip='always',
         mix_before=(3, 10),
-        touch_tip=True,
         blow_out=True)
 
     for s,d in zip(src_wells, dst_wells):
